@@ -1,12 +1,103 @@
-# React + Vite
+# BotConversation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack chat conversation viewer for support cases, built with **React**, **Node.js**, **PostgreSQL**, and **Prisma**.
 
-Currently, two official plugins are available:
+This project allows support representatives to view user conversations, messages, and case metadata in a clean, MUI-styled interface. It also includes an Express-based backend API and PostgreSQL integration using Prisma ORM.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 💬 Chat message UI with avatars, timestamps, and directional alignment
+- 🗂 View conversation summaries and full details
+- 🧾 Message timestamp formatting (no libraries required)
+- 🧱 PostgreSQL database schema using Prisma
+- 🎨 MUI (Material UI) for clean and responsive components
+- ✅ Bot welcome message is auto-generated on new conversations
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend:** React, MUI
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL
+- **ORM:** Prisma
+- **Tooling:** Vite, Git
+
+---
+
+## 📦 Getting Started
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/EliyaouVaknin/BotConversation.git
+cd BotConversation
+```
+
+### 2. Setup the Backend
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file inside `server/`:
+
+```env
+DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/chatapp
+PORT=3000
+```
+
+Run Prisma:
+
+```bash
+npx prisma db push
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+### 3. Setup the Frontend
+
+```bash
+cd ../client
+npm install
+npm run dev
+```
+
+---
+
+## 📂 Folder Structure
+
+```
+BotConversation/
+├── client/        # React + MUI frontend
+├── server/        # Express + Prisma backend
+└── prisma/        # Prisma schema & migrations
+```
+
+---
+
+## 🧪 Sample Conversation Flow
+
+1. A new conversation is created via POST `/conversations/new`
+2. The bot auto-replies with a greeting
+3. All messages and conversation data are stored in PostgreSQL
+4. Chat UI renders messages with alignment, avatars, and timestamp formatting
+
+---
+
+## 📃 License
+
+This project is for educational/demo purposes and is not licensed for production use.
+
+---
+
+## 🙋‍♂️ Author
+
+Built with ❤️ by [Eliyahu Vaknin](https://github.com/EliyaouVaknin)

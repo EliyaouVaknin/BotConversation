@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+.header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.conversation-screen {
+    padding: 30px;
+    max-width: 700px;
+    background-color: #f8f4f4;
+}
+
+.main-session {
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.messages-container {
+    margin-top: 15px;
+}
+
+.main-popup-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.session-info {
+    border-bottom: 1px solid #dddd;
+}

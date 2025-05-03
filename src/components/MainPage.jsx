@@ -8,7 +8,9 @@ import Header from './Header';
 
 export default function MainPage() {
     const [conversation, setConversations] = useState([]);
+    const [username, setUsername] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
     const [inputError, setInputError] = useState(false)
     const [currentConversation, setCurrentConversation] = useState({});
     const [currentUserInput, setCurrentUserInput] = useState("");
@@ -41,6 +43,16 @@ export default function MainPage() {
         });
     };
 
+    const findUserNameById = async (id) => {
+        try {
+            const response = await axios.get((`http://localhost:3000/getUserName/${id}`));
+            return response.data;
+        } catch (error) {
+            console.error("error getting username: " + error)
+        }
+
+    }
+
     const createNewChat = async () => {
         try {
             setIsLoading(true);
@@ -61,11 +73,14 @@ export default function MainPage() {
                 productName: response.data[0].productName,
                 id: response.data[0].id,
                 updatedAt: response.data[0].updatedAt,
+                userId: response.data[0].userId,
                 messages: [response.data[1]],
                 firstMessage: response.data[1]
             }
+            const userName = await findUserNameById(newConv.userId)
             setConversations(prev => [...prev, newConv]);
-            setCurrentConversation(newConv)
+            setCurrentConversation(newConv);
+            setUsername(userName);
             setShowConversation(true);
         } catch (error) {
             console.error('Error creating conversation:', error);
@@ -99,13 +114,21 @@ export default function MainPage() {
         }
     };
 
-    const handleBackButton = () => {
-        setCurrentConversation({});
-        setShowConversation(false)
-    }
+    const handleBackButton = async () => {
+        try {
+            setCurrentConversation(null);
+            setShowConversation(false);
+    
+            const response = await axios.get('http://localhost:3000/conversations/summary');
+            setConversations(response.data);
+        } catch (error) {
+            console.error('Error fetching updated conversations:', error);
+        }
+    };
 
     const handleSendButton = async () => {
         try {
+            setButtonDisabled(true);
             if (!currentUserInput) {
                 setInputError(true);
             } else {
@@ -115,14 +138,18 @@ export default function MainPage() {
                     content: currentUserInput
                 }
                 const response = await axios.post(`http://localhost:3000/conversations/${currentConversation.id}/messages`, payload);
+                const latestTimestamp = response.data[response.data.length - 1]?.timestamp;
                 setCurrentConversation((prev) => ({
                     ...prev,
-                    messages: [...prev.messages, ...response.data]
+                    messages: [...prev.messages, ...response.data],
+                    updatedAt: latestTimestamp
                 }));
                 setCurrentUserInput("");
             }
         } catch (error) {
             console.error('Error sending message: ', error)
+        } finally {
+            setButtonDisabled(false);
         }
     }
 
@@ -130,7 +157,7 @@ export default function MainPage() {
         <div className="main-page-wrapper">
             <Sidebar handleBackButton={handleBackButton} />
 
-            <Header createNewChat={createNewChat} showConversation={showConversation} />
+            <Header createNewChat={createNewChat} showConversation={showConversation} username={username} />
             
             <div className="main-content" style={{ marginLeft: "195px" }}>
                 {isLoading ? (
@@ -145,9 +172,10 @@ export default function MainPage() {
                         setCurrentUserInput={setCurrentUserInput} 
                         inputError={inputError}
                         currentUserInput={currentUserInput} 
-                        handleSendButton={handleSendButton} />
+                        handleSendButton={handleSendButton}
+                        buttonDisabled={buttonDisabled} />
                 ) : (
-                    <ConversationSummary conversation={conversation} handleRowClick={handleRowClick}/>
+                    <ConversationSummary conversation={conversation} handleRowClick={handleRowClick} deleteConversation={deleteConversation} />
                 )}
             </div>
         </div >

@@ -77,8 +77,7 @@ npm run dev
 ```
 BotConversation/
 ├── client/        # React + MUI frontend
-├── server/        # Express + Prisma backend
-└── prisma/        # Prisma schema & migrations
+└── server/        # Express + Prisma backend
 ```
 
 ---

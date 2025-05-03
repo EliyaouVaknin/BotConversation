@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Typography, Button, TextField, Grid } from '@mui/material';
 import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import ChatMessage from './ChatMessage';
 
-export default function ConversationScreen({ handleBackButton, currentConversation, formatDate, setCurrentUserInput, inputError, currentUserInput, handleSendButton}) {
+export default function ConversationScreen({ handleBackButton, currentConversation, formatDate, setCurrentUserInput, inputError, currentUserInput, handleSendButton, buttonDisabled }) {
     const buttonText = "< Back To Conversation";
 
     return (
@@ -54,26 +54,47 @@ export default function ConversationScreen({ handleBackButton, currentConversati
                         <ChatMessage message={message.content} sender={message.direction} timestamp={formatDate(message.timestamp)} />
                     </div>
                 ))}
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                <div className="text-input-wrapper">
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            width: '95%',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            padding: '8px',
+                        }}
+                    >
                         <TextField
-                            id="outlined-basic"
-                            label="Type your message"
-                            variant="outlined"
-                            sx={{ width: '610px', marginTop: '10px' }}
+                            id="message-input"
+                            placeholder="Type your message"
+                            variant="standard"
+                            multiline
+                            minRows={5}
+                            value={currentUserInput}
                             onChange={(e) => setCurrentUserInput(e.target.value)}
                             error={inputError}
-                            helperText={inputError ? "Message cannot be empty." : ""}
-                            value={currentUserInput}
+                            helperText={inputError ? 'Message cannot be empty.' : ''}
                             fullWidth
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button variant="contained" onClick={handleSendButton} fullWidth sx={{ height: '56px', marginTop: '10px' }}>
+
+                        <Button
+                            variant="contained"
+                            onClick={handleSendButton}
+                            disabled={buttonDisabled}
+                            sx={{
+                                position: 'absolute',
+                                bottom: '16px',
+                                right: '16px',
+                                minWidth: '64px',
+                                backgroundColor: '#090979',
+                                color: '#fff',
+                                textTransform: 'none',
+                            }}
+                        >
                             Send
                         </Button>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </div>
             </div>
         </div>
     )

@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 
-export default function ConversationSummary({conversation, handleRowClick}) {
+export default function ConversationSummary({conversation, handleRowClick, deleteConversation}) {
     return (
         <div className="conversations-summary">
             <TableContainer component={Paper}>
@@ -23,7 +23,7 @@ export default function ConversationSummary({conversation, handleRowClick}) {
                                 onClick={() => handleRowClick(row.id)}
                             >
                                 <TableCell component="th" scope="row">{row.id}</TableCell>
-                                <TableCell align="left">{row.firstMessage?.content || "No messages yet..."}</TableCell>
+                                <TableCell align="left">{row.messages[row.messages.length -1]?.content || "No messages yet..."}</TableCell>
                                 <TableCell align="left">
                                     <Button
                                         variant="contained"

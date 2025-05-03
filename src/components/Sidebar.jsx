@@ -20,11 +20,6 @@ export default function Sidebar({handleBackButton}) {
     >
       <Box sx={{ overflow: 'auto' }}>
         <Typography variant="h6" sx={{ p: 2 }}>Menu</Typography>
-        <List>
-            <ListItem button key="Home">
-              <ListItemText primary="Home" />
-            </ListItem>
-        </List>
       </Box>
     </Drawer>
   );

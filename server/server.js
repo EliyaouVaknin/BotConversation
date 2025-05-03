@@ -9,31 +9,27 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
+const messagesArray = [
+  `Hi there! 👋 I'm here to help with any questions or issues you have. Feel free to tell me what's going on, and I’ll do my best to assist you right away!`,
+  "Hello John, have you tried checking the memory allocated for your site?",
+  "Thanks for confirming. Can you please check if there are any error messages in your browser console?",
+  "Alright. Let's try resetting the Widget Pro. Can you please go to the plugin settings and click on 'Reset to Default'?"
+];
+
 app.get('/conversations/summary', async (req, res) => {
   try {
     const conversations = await prisma.conversation.findMany({
-      select: {
-        id: true,
+      include: {
         messages: {
-          take: 1,
-          orderBy: { timestamp: 'asc' }, // ✅ use correct field name
-          select: {
-            id: true,
-            content: true,
-            timestamp: true,
-          },
+          orderBy: { timestamp: 'asc' }
         },
-      },
+        user: true
+      }
     });
 
-    const result = conversations.map((c) => ({
-      id: c.id,
-      firstMessage: c.messages[0] || null,
-    }));
-
-    res.json(result);
+    res.json(conversations);
   } catch (error) {
-    console.error('Error fetching summaries:', error);
+    console.error('Error fetching full conversation data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -49,6 +45,15 @@ app.get('/conversations/:id', async (req, res) => {
     res.json(convo);
 });
 
+app.get('/getUserName/:id', async (req, res) => {
+  const { id } = req.params;
+  const name = await prisma.user.findUnique({
+      where: { id: id }
+  });
+  if (!name) return res.status(404).send('Conversation not found');
+  res.json(name.firstName);
+});
+
 app.post('/conversations/:id/messages', async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
@@ -61,15 +66,29 @@ app.post('/conversations/:id/messages', async (req, res) => {
             timestamp: new Date()
         },
     });
+    
+    const outMessagesCounter = await prisma.message.count({
+      where: {
+        conversationId: parseInt(id),
+        direction: "out"
+      }
+    });
+
+    const botMessageReplay = messagesArray[outMessagesCounter] || "Thanks for your message! A support agent will follow up shortly.";
 
     const botReply = await prisma.message.create({
         data: {
             conversationId: parseInt(id),
-            content: "Hi! Im bot, how can I help you?",
+            content: botMessageReplay,
             direction: 'out', 
             timestamp: new Date()
         },
     });
+
+    await prisma.conversation.update({
+      where: {id: parseInt(id) },
+      data: {updatedAt: new Date()}
+    })
 
     res.json([userMessage, botReply]);
 });
@@ -89,6 +108,7 @@ app.post('/conversations/new', async (req, res) => {
       productName,
       status,
       title,
+      updatedAt: new Date(),
       userId: user.id,
       messages: {
         create: messages || []
@@ -100,7 +120,7 @@ app.post('/conversations/new', async (req, res) => {
     data: {
       conversationId: newConversation.id,
       direction: 'out',
-      content: "Hi! I'm bot, how can I help you?",
+      content: messagesArray[0],
       timestamp: new Date()
     }
   });
